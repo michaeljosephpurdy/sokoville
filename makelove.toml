@@ -1,5 +1,5 @@
-name = "2024-winter-game-jam"
-default_targets = ["macos", "appimage", "win64", "lovejs"]
+name = "sokoville"
+default_targets = ["macos", "appimage", "win64"]
 build_directory = "makelove-build"
 
 love_files = [
@@ -9,17 +9,13 @@ love_files = [
     "-*/dist*",
 ]
 
-[lovejs]
-title = "Sacrifice and Atone"
-memory = "200000000"  # starting memory of the webpage (default is 20 MB)
-
 [macos]
 # optionally, you can include a mac-specific icon, if not mac will use the same icon as other targets
 #icon_file = "macIcon.png"  # or macIcon.icns
 
 [macos.app_metadata]
-CFBundleName = "2024 winter Game Jam"
-CFBundleIdentifier = "dev.mikepurdy.2024wintergamejam"
+CFBundleName = "sokoville"
+CFBundleIdentifier = "dev.mikepurdy.sokoville"
 NSHumanReadableCopyright = "Copyright © 2024 Mike Purdy"
 CFBundleShortVersionString = "0.0.1"
 
@@ -30,4 +26,4 @@ CompanyName = "Mike Purdy" # "LÖVE World Domination Inc."
 LegalCopyright = "Copyright © 2024 Mike Purdy"
 ProductName = "{name}" # "LÖVE"
 ProductVersion = "{version}"
-OriginalFilename = "purdy-winter-2024.exe" # "love.exe"
+OriginalFilename = "sokoville.exe" # "love.exe"

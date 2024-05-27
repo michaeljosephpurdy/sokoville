@@ -1,90 +1,85 @@
-love.graphics.setDefaultFilter("nearest", "nearest")
-require("plugins.memory-printer")
-class = require("plugins.middleclass")
-push = require("plugins.push")
-ldtk = require("plugins.super-simple-ldtk")
-require("systems.game-state")
-require("systems.screen-transition")
-require("systems.camera")
-require("mixins.reacts")
-require("mixins.collides")
-require("mixins.killable")
-require("mixins.rewindable")
-require("plugins.pubsub")
-require("plugins.super-simple-ldtk")
-require("entities.base")
-require("scenes.base")
-require("entities.sfx")
-require("scenes.puzzle")
-require("entities.collider")
-require("entities.cross")
-require("entities.player")
-require("entities.image")
-require("entities.box")
-require("entities.exit")
-require("entities.animal")
-require("entities.altar")
-require("entities.fence")
-require("entities.text")
-require("entities.rock")
-
-GAME_WIDTH = 320
-GAME_HEIGHT = 320
-DEBUG = false
---DEBUG_LEVEL = "Tutorial_4"
-
 function love.load()
-	keys = {}
-	local windowWidth, windowHeight = love.window.getDesktopDimensions()
-	push:setupScreen(GAME_WIDTH, GAME_HEIGHT, windowWidth, windowHeight, {
-		fullscreen = false,
-		resizable = true,
-	})
-	push:resize(windowWidth, windowHeight)
-	ldtk:init("world")
-	push:setBorderColor(love.math.colorFromBytes(115, 239, 247))
-	push:setBorderColor(love.math.colorFromBytes(26, 28, 44))
-	GAME_STATE = GameState:new()
-	ScreneTransitionSingleton = ScreenTransition:new()
-	if DEBUG_LEVEL then
-		GAME_STATE:transition(PuzzleScene:new(DEBUG_LEVEL))
-	else
-		GAME_STATE:transition(PuzzleScene:new("Tutorial_0"))
-	end
-	background_music = love.audio.newSource("assets/background.wav", "stream")
-	background_music:setLooping(true)
-	background_music:setVolume(0.005)
-	background_music:play()
-end
+  love.graphics.setDefaultFilter('nearest', 'nearest')
 
-function love.update(dt)
-	for key, timer in pairs(keys) do
-		keys[key] = timer - dt
-		if timer < 0 then
-			PubSub.publish("keyrelease", key)
-			keys[key] = 0.125
-		end
-	end
-	GAME_STATE.current_scene:update(dt)
+  class = require('plugins.middleclass')
+  tiny = require('plugins.tiny')
+  logger = require('logger')()
+
+  tiny_world = tiny.world()
+
+  -- load systems
+  -- load entities
+  RewindEvent = require('entities.events.rewind')
+  GameTickEvent = require('entities.events.game-tick')
+  KeyPressEvent = require('entities.events.key-press')
+  KeyReleaseEvent = require('entities.events.key-release')
+  ScreenResizeEvent = require('entities.events.screen-resize')
+
+  ---@type SystemProps
+  GLOBAL = {
+    game_width = 320, --640,
+    game_height = 180, --360,
+    border_color = { love.math.colorFromBytes(48, 44, 46) }, --#302c2e
+    grid_size = 32,
+    rewind_data = {}, -- TODO: check game save
+    rewind_step = 1, -- TODO: check game save
+    old_rewind_step = 1, -- TODO: check game save
+  }
+  for _, system in ipairs({
+    require('systems.event-cleanup-system'),
+    require('systems.entity-cleanup-system'),
+    require('systems.grid-based-collision-registration-system'),
+    require('systems.player-input-system'),
+    require('systems.entity-movement-system'),
+    require('systems.grid-based-movement-system'),
+    require('systems.rewind-persistance-system'),
+    require('systems.rewind-playback-system'),
+    require('systems.camera-system'),
+    require('systems.background-sprite-drawing-system'),
+    require('systems.sprite-drawing-system'),
+    require('systems.foreground-sprite-drawing-system'),
+    require('systems.debugger-overlay-system'),
+  }) do
+    if system.initialize then
+      system:initialize()
+    end
+    tiny_world:addSystem(system)
+  end
+  tiny_world:add({
+    x = 96,
+    y = 32,
+    dx = 0,
+    dy = 0,
+    snap_to_grid = true,
+    is_pushable = true,
+    --is_rewindable = true,
+    sprite = love.graphics.newImage('assets/box.png'),
+  })
+  tiny_world:add({
+    x = 32,
+    y = 32,
+    dx = 0,
+    dy = 0,
+    snap_to_grid = true,
+    is_rewindable = true,
+    is_player = true,
+    sprite = love.graphics.newImage('assets/player.png'),
+  })
 end
 
 function love.draw()
-	push:start()
-	GAME_STATE.current_scene:draw()
-	GAME_STATE:draw()
-	push:finish()
+  local dt = love.timer.getDelta()
+  tiny_world:update(dt)
 end
 
 function love.keypressed(k)
-	keys[k] = 1
-	PubSub.publish("keypress", k)
+  tiny_world:addEntity(KeyPressEvent(k))
 end
 
 function love.keyreleased(k)
-	keys[k] = nil
-	PubSub.publish("keyrelease", k)
+  tiny_world:addEntity(KeyReleaseEvent(k))
 end
 
 function love.resize(w, h)
-	push:resize(w, h)
+  tiny_world:addEntity(ScreenResizeEvent(w, h))
 end
