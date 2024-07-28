@@ -3,24 +3,25 @@ local Logger = class('Logger')
 
 function Logger:initialize()
   local valid = love.filesystem.getInfo('log.txt')
-  if not valid then
-    love.filesystem.newFile('log.txt')
+  if valid then
     return
   end
+  love.filesystem.newFile('log.txt')
 end
 
 ---@param msg any
 ---@return string
 function Logger:parse_msg(msg)
   if type(msg) ~= 'table' then
-    return tostring(msg)
+    return msg
   end
-  local log_msg = '{\n'
-  for k, v in pairs(msg) do
-    log_msg = log_msg .. ' "' .. k .. '": ' .. self:parse_msg(v)
-  end
-  log_msg = log_msg .. '\n}'
-  return log_msg
+  return json.encode(msg)
+  --local log_msg = '{\n'
+  --for k, v in pairs(msg) do
+  --log_msg = log_msg .. ' "' .. k .. '": ' .. self:parse_msg(v)
+  --end
+  --log_msg = log_msg .. '\n}'
+  --return log_msg
 end
 
 ---@param msg any

@@ -4,7 +4,7 @@ CameraSystem.is_draw_system = true
 
 function CameraSystem:initialize()
   self.push = require('plugins.push')
-  local windowWidth, windowHeight = love.window.getDesktopDimensions()
+  local windowWidth, windowHeight = love.graphics.getDimensions()
   self.push:setupScreen(GLOBAL.game_width, GLOBAL.game_width, windowWidth, windowHeight, {
     fullscreen = false,
     resizable = true,

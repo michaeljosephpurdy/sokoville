@@ -4,8 +4,13 @@ ForegroundSpriteDrawingSystem.is_draw_system = true
 local default_offset = { x = 0, y = 0 }
 
 function ForegroundSpriteDrawingSystem:process(e, dt)
+  local x, y = e.x, e.y
   local offset = e.sprite_offset or default_offset
-  love.graphics.draw(e.sprite, e.x + offset.x, e.y + offset.y)
+  if e.snap_to_grid then
+    x = x * EntityGridData.grid_size
+    y = y * EntityGridData.grid_size
+  end
+  love.graphics.draw(e.sprite, x + offset.x, y + offset.y)
 end
 
 return ForegroundSpriteDrawingSystem

@@ -2,8 +2,13 @@ function love.load()
   love.graphics.setDefaultFilter('nearest', 'nearest')
 
   class = require('plugins.middleclass')
+  json = require('plugins.json')
   tiny = require('plugins.tiny')
-  logger = require('logger')()
+  logger = require('logger')() --[[@as Logger]]
+  RewindData = require('rewind-data')() --[[@as RewindData]]
+  EntityGridData = require('grid-data')() --[[@as GridData]]
+  TileGridData = require('grid-data')() --[[@as GridData]]
+  GLOBAL = require('global')() --[[@as Global]]
 
   tiny_world = tiny.world()
 
@@ -14,62 +19,60 @@ function love.load()
   KeyPressEvent = require('entities.events.key-press')
   KeyReleaseEvent = require('entities.events.key-release')
   ScreenResizeEvent = require('entities.events.screen-resize')
+  MapEditorToggleEvent = require('entities.events.map-editor-toggle')
 
-  ---@type SystemProps
-  GLOBAL = {
-    game_width = 320, --640,
-    game_height = 180, --360,
-    border_color = { love.math.colorFromBytes(48, 44, 46) }, --#302c2e
-    grid_size = 32,
-    rewind_data = {}, -- TODO: check game save
-    rewind_step = 1, -- TODO: check game save
-    old_rewind_step = 1, -- TODO: check game save
-  }
+  -- load shared-access
+  -- these are used to access
+  local mouse_state = require('shared-access.mouse')() --[[@as MouseState]]
+  local keyboard_state = require('shared-access.keyboard')() --[[@as KeyboardState]]
+  local joystick_state = require('shared-access.joystick')() --[[@as JoystickState]]
+  local map_data = require('shared-access.map-data')() --[[@as MapData]]
+  local entity_factory = require('shared-access.entity-factory')() --[[@as EntityFactory]]
+  map_data:populate_world(tiny_world)
+
   for _, system in ipairs({
-    require('systems.event-cleanup-system'),
-    require('systems.entity-cleanup-system'),
+    require('systems.keyboard-state-system'),
+    require('systems.mouse-state-system'),
+    require('systems.joystick-state-system'),
+    require('systems.map-editor-system'),
     require('systems.grid-based-collision-registration-system'),
     require('systems.player-input-system'),
-    require('systems.entity-movement-system'),
     require('systems.grid-based-movement-system'),
     require('systems.rewind-persistance-system'),
     require('systems.rewind-playback-system'),
+    require('systems.grid-based-collision-resolution-system'),
+    require('systems.entity-movement-system'),
+
     require('systems.camera-system'),
     require('systems.background-sprite-drawing-system'),
     require('systems.sprite-drawing-system'),
     require('systems.foreground-sprite-drawing-system'),
+
     require('systems.debugger-overlay-system'),
+    require('systems.singleton-manager-system'),
+    require('systems.entity-cleanup-system'),
+    require('systems.event-cleanup-system'),
   }) do
     if system.initialize then
-      system:initialize()
+      system:initialize({
+        mouse_state = mouse_state,
+        keyboard_state = keyboard_state,
+        joystick_state = joystick_state,
+        map_data = map_data,
+        entity_factory = entity_factory,
+      })
     end
     tiny_world:addSystem(system)
   end
-  tiny_world:add({
-    x = 96,
-    y = 32,
-    dx = 0,
-    dy = 0,
-    snap_to_grid = true,
-    is_pushable = true,
-    --is_rewindable = true,
-    sprite = love.graphics.newImage('assets/box.png'),
-  })
-  tiny_world:add({
-    x = 32,
-    y = 32,
-    dx = 0,
-    dy = 0,
-    snap_to_grid = true,
-    is_rewindable = true,
-    is_player = true,
-    sprite = love.graphics.newImage('assets/player.png'),
-  })
 end
 
 function love.draw()
   local dt = love.timer.getDelta()
   tiny_world:update(dt)
+  if GLOBAL.refresh_world then
+    tiny_world:refresh()
+    GLOBAL.refresh_world = false
+  end
 end
 
 function love.keypressed(k)

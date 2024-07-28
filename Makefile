@@ -1,6 +1,13 @@
 all:
 	love ./
 
+clean:
+	rm '/Users/purdy/Library/Application Support/LOVE/lovegame/log.txt'
+
+deepclean:
+	rm '/Users/purdy/Library/Application Support/LOVE/lovegame/world.json'
+	make clean
+
 images:
 	aseprite -b assets/player.aseprite --save-as assets/player.png
 	aseprite -b assets/box.aseprite --save-as assets/box.png
