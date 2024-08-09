@@ -1,27 +1,41 @@
-local SpriteDrawingSystem = tiny.processingSystem()
-local rejection_filter = tiny.rejectAny('draw_foreground', 'draw_background')
-SpriteDrawingSystem.filter = tiny.requireAll(rejection_filter, 'sprite', 'x', 'y')
-SpriteDrawingSystem.is_draw_system = true
+local SpriteDrawingSystem = tiny.sortedProcessingSystem()
+SpriteDrawingSystem.filter = tiny.requireAll('drawable', 'position')
+
 local default_offset = { x = 0, y = 0 }
 
-function SpriteDrawingSystem:initialize()
-  self.images = {}
+---@param props SystemProps
+function SpriteDrawingSystem:init(props)
+  self.system_props = props
 end
 
-function SpriteDrawingSystem:onAdd(e)
-  if not self.images[e.sprite] then
-    self.images[e.sprite] = love.graphics.newImage(e.sprite)
-  end
+---@param e1 Drawable
+---@param e2 Drawable
+---@return boolean
+function SpriteDrawingSystem:compare(e1, e2)
+  return (e1.drawable.z_index or 0) < (e2.drawable.z_index or 0)
 end
 
+---@param e Drawable | Position
+---@param dt number
 function SpriteDrawingSystem:process(e, dt)
-  local x, y = e.x, e.y
-  local offset = e.sprite_offset or default_offset
-  if e.snap_to_grid then
-    x = x * EntityGridData.grid_size
-    y = y * EntityGridData.grid_size
+  if e.drawable.hidden then
+    return
   end
-  love.graphics.draw(self.images[e.sprite], x + offset.x, y + offset.y)
+  local scale = self.system_props.scale * (e.drawable.scale or 1)
+  local x, y = e.position.x * scale, e.position.y * scale
+  local offset = e.drawable.offset or default_offset
+  local origin_offset = e.drawable.origin_offset or 0
+  local rotation = e.drawable.rotation or 0
+  love.graphics.draw(
+    e.drawable.sprite,
+    x + offset.x,
+    y + offset.y,
+    rotation,
+    scale,
+    scale,
+    origin_offset,
+    origin_offset
+  )
 end
 
 return SpriteDrawingSystem

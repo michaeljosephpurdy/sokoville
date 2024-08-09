@@ -1,14 +1,18 @@
 ---@class KeyboardState
-KeyboardState = class('KeyboardState') --[[@as KeyboardState]]
-KeyboardState.static.is_singleton = true
+local KeyboardState = {}
 
-function KeyboardState:initialize()
+function KeyboardState:init()
   self.controls = {}
   self.released = {}
+  return self
 end
 
 function KeyboardState:is_key_just_released(keycode)
   return self.released[keycode]
+end
+
+function KeyboardState:is_key_down(keycode)
+  return love.keyboard.isDown(keycode)
 end
 
 function KeyboardState:push(keycode)
@@ -29,4 +33,4 @@ function KeyboardState:reset()
   self.released = {}
 end
 
-return KeyboardState --[[@as KeyboardState]]
+return KeyboardState

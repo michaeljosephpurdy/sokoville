@@ -1,0 +1,12 @@
+---@meta
+---@class (exact) Movable
+---@field movable _MovableComponent
+
+---@class (exact) _MovableComponent
+---@field speed number
+---@field up? boolean
+---@field down? boolean
+---@field left? boolean
+---@field right? boolean
+---@field x? number
+---@field y? number

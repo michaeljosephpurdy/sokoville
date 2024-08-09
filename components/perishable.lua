@@ -1,0 +1,3 @@
+---@meta
+---@class (exact) Perishable
+---@field time_to_live number

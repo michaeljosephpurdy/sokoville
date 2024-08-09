@@ -1,0 +1,12 @@
+---@meta
+---@class (exact) Controllable
+---@field controllable _ControllableComponent
+
+---@class (exact) _ControllableComponent
+---@field is_active boolean
+---@field up? boolean
+---@field down? boolean
+---@field left? boolean
+---@field right? boolean
+---@field primary? boolean
+---@field secondary? boolean
