@@ -1,3 +1,7 @@
+function log(str, ...)
+  print(string.format(str, ...))
+end
+
 function love.load()
   love.graphics.setDefaultFilter('nearest', 'nearest')
 
@@ -19,6 +23,7 @@ function love.load()
     game_grid_size = 16,
     scale = 2,
     display_debug = false,
+    step = 1,
   }
 
   for _, system in ipairs({
@@ -29,10 +34,12 @@ function love.load()
     -- input
     require('systems.keyboard-state-system'),
     require('systems.controllable-system'),
+    require('systems.game-step-system'),
     -- processing
     require('systems.movable-system'),
     require('systems.collision-detection-system'),
     require('systems.collision-resolution-system'),
+    require('systems.rewind-system'),
     -- drawing
     require('systems.camera-system'),
     require('systems.sprite-drawing-system'),

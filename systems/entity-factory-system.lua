@@ -1,10 +1,14 @@
 local EntityFactorySystem = tiny.processingSystem()
-EntityFactorySystem.filter = tiny.requireAll('is_event', 'ldtk_entity')
+
+---@param e Event | LDTKEntity
+function EntityFactorySystem:filter(e)
+  return e.is_event and e.ldtk_entity
+end
 
 ---@param id LDTKEntityId
 local function entity_data(id)
   if id == 'PlayerStart' then
-    ---@type Drawable | Controllable | Movable | Collidable
+    ---@type Drawable | Controllable | Movable | Collidable | Rewindable
     return {
       id = 'Player',
       collidable = { is_detector = true },
@@ -15,15 +19,17 @@ local function entity_data(id)
       controllable = {
         is_active = true,
       },
+      rewindable = {},
     }
   elseif id == 'Box' then
-    ---@type Drawable | Collidable | Pushable
+    ---@type Drawable | Collidable | Pushable | Rewindable
     return {
       collidable = {},
       pushable = {},
       drawable = {
         sprite = love.graphics.newImage('assets/box.png'),
       },
+      rewindable = {},
     }
   else
     return {}

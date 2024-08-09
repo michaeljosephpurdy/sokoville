@@ -1,5 +1,9 @@
 local CollisionRegistrationSystem = tiny.processingSystem()
-CollisionRegistrationSystem.filter = tiny.requireAll('collidable', 'position')
+
+---@param e Position | Collidable
+function CollisionRegistrationSystem:filter(e)
+  return e.collidable and e.position
+end
 
 ---@param props SystemProps
 function CollisionRegistrationSystem:init(props)

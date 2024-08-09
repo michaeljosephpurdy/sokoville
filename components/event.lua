@@ -22,3 +22,9 @@
 ---@class (exact) SpawnEvent: Event
 ---@field spawn boolean
 ---@field position _PositionComponent
+
+---@class (exact) RewindEvent: Event
+---@field rewindable boolean
+
+---@class (exact) GameStepAdvanceEvent: Event
+---@field game_step_advance any

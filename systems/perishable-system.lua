@@ -1,5 +1,9 @@
 local PerishableSystem = tiny.processingSystem()
-PerishableSystem.filter = tiny.requireAll('perishable')
+
+---@param e Perishable
+function PerishableSystem:filter(e)
+  return e.time_to_live
+end
 
 ---@param e Perishable
 ---@param dt number

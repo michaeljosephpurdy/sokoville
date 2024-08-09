@@ -1,6 +1,9 @@
 local EventCleanupSystem = tiny.processingSystem()
-local rejection_filter = tiny.rejectAll('perishable')
-EventCleanupSystem.filter = tiny.requireAll(rejection_filter, 'is_event')
+
+---@param e Perishable | Event
+function EventCleanupSystem:filter(e)
+  return e.is_event and not e.time_to_live
+end
 
 ---@param e Event
 ---@param dt number

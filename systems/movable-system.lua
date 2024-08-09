@@ -1,5 +1,9 @@
 local MovableSystem = tiny.processingSystem()
-MovableSystem.filter = tiny.requireAll('movable', 'position')
+
+---@param e Movable | Position
+function MovableSystem:filter(e)
+  return e.movable and e.position
+end
 
 ---@param props SystemProps
 function MovableSystem:init(props)

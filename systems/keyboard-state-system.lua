@@ -1,6 +1,9 @@
 local System = tiny.processingSystem()
-local keyboard_events = tiny.requireAny('key_press', 'key_release')
-System.filter = tiny.requireAll(keyboard_events, 'is_event')
+
+---@param e KeyPressEvent | KeyReleaseEvent
+function System:filter(e)
+  return e.is_event and (e.key_press or e.key_release)
+end
 
 ---@param props SystemProps
 function System:init(props)

@@ -1,5 +1,9 @@
 local TileMapSystem = tiny.processingSystem()
-TileMapSystem.filter = tiny.requireAll('is_event', 'tile_map')
+
+---@param e LoadTileMapEvent
+function TileMapSystem:filter(e)
+  return e.is_event and e.tile_map
+end
 
 function TileMapSystem:init(props)
   self.ldtk = require('plugins.super-simple-ldtk')

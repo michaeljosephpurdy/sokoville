@@ -1,5 +1,9 @@
 local SpriteDrawingSystem = tiny.sortedProcessingSystem()
-SpriteDrawingSystem.filter = tiny.requireAll('drawable', 'position')
+
+---@param e Drawable | Position
+function SpriteDrawingSystem:filter(e)
+  return e.drawable and e.position
+end
 
 local default_offset = { x = 0, y = 0 }
 
