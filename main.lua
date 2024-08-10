@@ -34,12 +34,15 @@ function love.load()
     -- input
     require('systems.keyboard-state-system'),
     require('systems.controllable-system'),
-    require('systems.game-step-system'),
     -- processing
+    require('systems.position-sync-system'),
+    require('systems.rewind-playback-system'),
+    require('systems.game-step-system'),
     require('systems.movable-system'),
     require('systems.collision-detection-system'),
     require('systems.collision-resolution-system'),
-    require('systems.rewind-system'),
+    require('systems.controllable-resolution-system'),
+    require('systems.rewind-persistance-system'),
     -- drawing
     require('systems.camera-system'),
     require('systems.sprite-drawing-system'),

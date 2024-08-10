@@ -17,7 +17,13 @@ function System:onAddToWorld(world) end
 function System:onAdd(e) end
 
 ---@param e any
+function System:onAddEvent(e) end
+
+---@param e any
 function System:onRemove(e) end
+
+---@param e any
+function System:onRemoveEvent(e) end
 
 ---@param dt number
 function System:preWrap(dt) end

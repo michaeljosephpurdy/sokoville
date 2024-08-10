@@ -10,3 +10,5 @@
 ---@field right? boolean
 ---@field primary? boolean
 ---@field secondary? boolean
+---@field x? number
+---@field y? number

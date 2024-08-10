@@ -26,5 +26,8 @@
 ---@class (exact) RewindEvent: Event
 ---@field rewindable boolean
 
----@class (exact) GameStepAdvanceEvent: Event
----@field game_step_advance any
+---@class (exact) GameStepIncrementEvent: Event
+---@field game_step_increment boolean
+
+---@class (exact) GameStepDecrementEvent: Event
+---@field game_step_decrement boolean

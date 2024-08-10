@@ -41,6 +41,8 @@ local tiny_addSystem
 local tiny_add
 local tiny_removeEntity
 local tiny_removeSystem
+local tiny_addEvent
+local tiny_removeEvent
 
 --- Filter functions.
 -- A Filter is a function that selects which Entities apply to a System.
@@ -836,15 +838,36 @@ function tiny.setSystemIndex(world, system, index)
   return oldIndex
 end
 
+function tiny.addEvent(world, e)
+  for j = 1, #world.systems do
+    local system = world.systems[j]
+    if system.onAddEvent then
+      system:onAddEvent(e)
+    end
+  end
+end
+tiny_addEvent = tiny.addEvent
+function tiny.removeEvent(world, e)
+  for j = 1, #world.systems do
+    local system = world.systems[j]
+    if system.onRemoveEvent then
+      system:onRemoveEvent(e)
+    end
+  end
+end
+tiny_removeEvent = tiny.removeEvent
+
 -- Construct world metatable.
 worldMetaTable = {
   __index = {
     add = tiny.add,
     addEntity = tiny.addEntity,
     addSystem = tiny.addSystem,
+    addEvent = tiny.addEvent,
     remove = tiny.remove,
     removeEntity = tiny.removeEntity,
     removeSystem = tiny.removeSystem,
+    removeEvent = tiny.removeEvent,
     refresh = tiny.refresh,
     update = tiny.update,
     clearEntities = tiny.clearEntities,
